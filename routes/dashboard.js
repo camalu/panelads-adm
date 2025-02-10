@@ -1,42 +1,37 @@
 import express from "express";
-import Dashboard from "../models/Dashboard.js";
-import User from "../models/User.js";
-import jwt from "jsonwebtoken";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import Visitante from "../models/Visitante.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+// Rota do dashboard para calcular valores dinâmicos
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const revendedorToken = req.user.userId; // Obtém o token do usuário autenticado
 
-    if (!token) {
-      return res.status(401).json({ error: "Token não fornecido" });
-    }
+    // Filtra apenas os visitantes do revendedor logado
+    const visitantes = await Visitante.find({ revendedorToken });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(401).json({ error: "Usuário não encontrado" });
-    }
-
-    const dashboardData = (await Dashboard.findOne()) || {
-      pedidos: 0,
-      pagamentos: 0,
-      totalVendas: 0,
-    };
+    // Calcula os valores dinâmicos
+    const pedidos = visitantes.filter(
+      (v) => v.statusPagamento === "gerado"
+    ).length;
+    const pagamentos = visitantes.filter(
+      (v) => v.statusPagamento === "pago"
+    ).length;
+    const totalVendas = visitantes.reduce(
+      (acc, v) => acc + (v.valorGerado || 0),
+      0
+    );
 
     res.json({
-      pedidos: dashboardData.pedidos,
-      pagamentos: dashboardData.pagamentos,
-      totalVendas: dashboardData.totalVendas,
-      usuarioToken: user.token,
-      email: user.email,
-      nome: user.nome || "Usuário sem nome",
+      pedidos,
+      pagamentos,
+      totalVendas: parseFloat(totalVendas.toFixed(2)), // Formata como decimal
     });
-  } catch (err) {
-    console.error("Erro ao buscar dados do dashboard:", err);
-    res.status(500).json({ error: "Erro ao buscar dados do dashboard." });
+  } catch (error) {
+    console.error("Erro ao calcular dados do dashboard:", error);
+    res.status(500).json({ error: "Erro interno no servidor." });
   }
 });
 

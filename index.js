@@ -32,7 +32,7 @@ mongoose
 app.use("/api/login", loginRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/dashboard", authMiddleware, dashboardRoutes);
-app.use("/api/visitantes", authMiddleware, visitantesRoutes);
+app.use("/api/visitantes", visitantesRoutes);
 app.use("/api/user", authMiddleware, userRoutes); // Nova rota para atualizar usuário
 app.use("/api/acquirers", acquirersRoutes); // Nova rota para gerenciar adquirentes
 
