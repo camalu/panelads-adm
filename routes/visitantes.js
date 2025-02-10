@@ -1,5 +1,6 @@
 import express from "express";
 import Visitante from "../models/Visitante.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -23,12 +24,10 @@ router.post("/visitantes", async (req, res) => {
 
     // 🔥 Verifica se os campos obrigatórios foram enviados
     if (!revendedorToken || !nome || !renavam || !estado) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Os campos revendedorToken, nome, renavam e estado são obrigatórios",
-        });
+      return res.status(400).json({
+        error:
+          "Os campos revendedorToken, nome, renavam e estado são obrigatórios",
+      });
     }
 
     // 🔥 Se os dados do navegador não forem enviados, usamos os valores padrões
@@ -61,6 +60,33 @@ router.post("/visitantes", async (req, res) => {
     res.status(201).json({ message: "Visitante cadastrado com sucesso!" });
   } catch (error) {
     res.status(500).json({ error: "Erro ao registrar visitante" });
+  }
+});
+
+router.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params; // Obtém o ID do visitante pela URL
+    const updateData = req.body; // Dados a serem atualizados
+
+    // Verifica se o visitante existe
+    const visitante = await Visitante.findById(id);
+    if (!visitante) {
+      return res.status(404).json({ error: "Visitante não encontrado." });
+    }
+
+    // Atualiza os dados
+    const updatedVisitante = await Visitante.findByIdAndUpdate(id, updateData, {
+      new: true, // Retorna os dados atualizados
+      runValidators: true, // Executa validações de esquema
+    });
+
+    res.json({
+      message: "Visitante atualizado com sucesso!",
+      visitante: updatedVisitante,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar visitante:", error);
+    res.status(500).json({ error: "Erro interno no servidor." });
   }
 });
 
