@@ -1,0 +1,20 @@
+{
+  "name": "detran-adm-api",
+  "version": "0.1.0",
+  "description": "API painel administrativo Detran",
+  "main": "index.js",
+  "author": "TROPA DO ADS",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "global": "^4.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.6",
+    "nodemon": "^3.1.9",
+    "uuid": "^11.0.5"
+  }
+}
