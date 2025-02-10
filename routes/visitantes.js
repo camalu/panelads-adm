@@ -4,7 +4,7 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/visitantes", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const {
       revendedorToken, // 🔥 Agora é enviado no corpo da requisição
