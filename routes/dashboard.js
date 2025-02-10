@@ -7,10 +7,10 @@ const router = express.Router();
 // Rota do dashboard para calcular valores dinâmicos
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const revendedorToken = req.user.userId; // Obtém o token do usuário autenticado
+    const userId = req.user.userId; // Obtendo o ID do usuário autenticado
 
-    // Filtra apenas os visitantes do revendedor logado
-    const visitantes = await Visitante.find({ revendedorToken });
+    // Filtra apenas os visitantes relacionados ao usuário logado
+    const visitantes = await Visitante.find({ revendedorToken: userId });
 
     // Calcula os valores dinâmicos
     const pedidos = visitantes.filter(
