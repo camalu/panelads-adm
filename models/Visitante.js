@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 
 const VisitanteSchema = new mongoose.Schema({
-  revendedorToken: { type: String, required: true }, // 🔥 Identifica o revendedor
-  idFatura: { type: String, default: null }, // 🔥 Agora é opcional
-  nome: { type: String, required: true }, // 🔥 Nome do visitante (obrigatório)
-  renavam: { type: String, required: true }, // 🔥 Agora é obrigatório
-  estado: { type: String, required: true }, // 🔥 Agora é obrigatório
-  adquirente: { type: String, default: null }, // 🔥 Agora é opcional
+  revendedorToken: { type: String, required: true },
+  idFatura: { type: String, default: null },
+  nome: { type: String, required: true },
+  renavam: { type: String, required: true },
+  estado: { type: String, required: true },
+  adquirente: { type: String, default: null },
   ip: String,
   userAgent: String,
   navegador: String,
   dispositivo: String,
-  valorGerado: { type: Number, default: 0 }, // 🔥 Agora é opcional
-  parcelasSelecionadas: { type: [Number], default: [] }, // 🔥 Agora é opcional
+  valorGerado: { type: Number, default: 0 },
+  parcelasSelecionadas: { type: [Number], default: [] },
   statusPagamento: {
     type: String,
     enum: ["não gerado", "gerado", "pago"],

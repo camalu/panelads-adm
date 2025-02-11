@@ -4,17 +4,30 @@ import Visitante from "../models/Visitante.js";
 
 const router = express.Router();
 
-// Rota do dashboard para calcular valores dinâmicos
+// Rota do dashboard com filtro de data
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId; // Obtendo o ID do usuário autenticado
+    let { dataInicial, dataFinal } = req.query;
 
-    // Filtra apenas os visitantes relacionados ao usuário logado
-    const visitantes = await Visitante.find({ revendedorToken: userId });
+    // Criando objeto de filtro
+    let filtro = { revendedorToken: userId };
+
+    // Se os filtros de data forem fornecidos, convertemos para Date
+    if (dataInicial || dataFinal) {
+      filtro.createdAt = {};
+      if (dataInicial)
+        filtro.createdAt.$gte = new Date(`${dataInicial}T00:00:00.000Z`);
+      if (dataFinal)
+        filtro.createdAt.$lte = new Date(`${dataFinal}T23:59:59.999Z`);
+    }
+
+    // Filtra apenas os visitantes relacionados ao usuário logado e dentro do período
+    const visitantes = await Visitante.find(filtro);
 
     // Contagem de pedidos e pagamentos
     const pedidos = visitantes.filter(
-      (v) => v.statusPagamento === "gerado"
+      (v) => v.statusPagamento === "gerado" || "pago"
     ).length;
     const pagamentos = visitantes.filter(
       (v) => v.statusPagamento === "pago"

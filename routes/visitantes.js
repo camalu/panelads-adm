@@ -4,6 +4,34 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+// Rota para listar visitantes do usuário autenticado com filtro de data
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId; // Obtendo o ID do usuário autenticado
+    let { dataInicial, dataFinal } = req.query;
+
+    // Criando objeto de filtro
+    let filtro = { revendedorToken: userId };
+
+    // Se os filtros de data forem fornecidos, convertemos para Date
+    if (dataInicial || dataFinal) {
+      filtro.createdAt = {};
+      if (dataInicial)
+        filtro.createdAt.$gte = new Date(`${dataInicial}T00:00:00.000Z`);
+      if (dataFinal)
+        filtro.createdAt.$lte = new Date(`${dataFinal}T23:59:59.999Z`);
+    }
+
+    // Busca todos os visitantes relacionados ao usuário logado e dentro do período
+    const visitantes = await Visitante.find(filtro).sort({ createdAt: -1 });
+
+    res.json({ visitantes });
+  } catch (error) {
+    console.error("Erro ao listar visitantes:", error);
+    res.status(500).json({ error: "Erro interno no servidor." });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const {
