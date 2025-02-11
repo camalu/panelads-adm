@@ -98,7 +98,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params; // Obtém o ID passado na URL
     const updateData = req.body; // Dados a serem atualizados
