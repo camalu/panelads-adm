@@ -27,7 +27,7 @@ router.get("/", authMiddleware, async (req, res) => {
 
     // Contagem de pedidos e pagamentos
     const pedidos = visitantes.filter(
-      (v) => v.statusPagamento === "gerado" || "pago"
+      (v) => v.statusPagamento !== "não gerado"
     ).length;
     const pagamentos = visitantes.filter(
       (v) => v.statusPagamento === "pago"
