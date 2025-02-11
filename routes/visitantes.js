@@ -98,22 +98,34 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { id } = req.params; // Obtém o ID do visitante pela URL
+    const { id } = req.params; // Obtém o ID passado na URL
     const updateData = req.body; // Dados a serem atualizados
+    let visitante;
 
-    // Verifica se o visitante existe
-    const visitante = await Visitante.findById(id);
+    // 🔥 Primeiro tenta encontrar pelo `_id`
+    visitante = await Visitante.findById(id);
+
+    // 🔥 Se não encontrar pelo `_id`, tenta encontrar pelo `idFatura`
+    if (!visitante) {
+      visitante = await Visitante.findOne({ idFatura: id });
+    }
+
+    // 🔥 Se não encontrar nem pelo `_id` nem pelo `idFatura`, retorna erro
     if (!visitante) {
       return res.status(404).json({ error: "Visitante não encontrado." });
     }
 
-    // Atualiza os dados
-    const updatedVisitante = await Visitante.findByIdAndUpdate(id, updateData, {
-      new: true, // Retorna os dados atualizados
-      runValidators: true, // Executa validações de esquema
-    });
+    // 🔥 Atualiza os dados do visitante encontrado
+    const updatedVisitante = await Visitante.findByIdAndUpdate(
+      visitante._id, // Sempre atualiza pelo `_id` real
+      updateData,
+      {
+        new: true, // Retorna os dados atualizados
+        runValidators: true, // Executa validações do esquema
+      }
+    );
 
     res.json({
       message: "Visitante atualizado com sucesso!",
