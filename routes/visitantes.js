@@ -84,9 +84,16 @@ router.post("/", async (req, res) => {
       statusPagamento,
     });
 
-    await novoVisitante.save();
-    res.status(201).json({ message: "Visitante cadastrado com sucesso!" });
+    // 🔥 Salvando no banco de dados
+    const visitanteSalvo = await novoVisitante.save();
+
+    // 🔥 Retorna o ID do visitante criado
+    res.status(201).json({
+      message: "Visitante cadastrado com sucesso!",
+      id: visitanteSalvo._id, // 🔥 Retornando o ID do visitante
+    });
   } catch (error) {
+    console.error("Erro ao registrar visitante:", error);
     res.status(500).json({ error: "Erro ao registrar visitante" });
   }
 });
