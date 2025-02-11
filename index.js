@@ -8,7 +8,8 @@ import loginRoutes from "./routes/login.js";
 import registerRoutes from "./routes/register.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import visitantesRoutes from "./routes/visitantes.js";
-import userRoutes from "./routes/user.js"; // Nova rota de atualização de usuário
+import userRoutes from "./routes/user.js";
+import usersRoutes from "./routes/users.js";
 import acquirersRoutes from "./routes/acquirers.js"; // Nova rota de adquirentes
 
 // Middleware de autenticação
@@ -33,7 +34,8 @@ app.use("/api/login", loginRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/dashboard", authMiddleware, dashboardRoutes);
 app.use("/api/visitantes", visitantesRoutes);
-app.use("/api/user", authMiddleware, userRoutes); // Nova rota para atualizar usuário
+app.use("/api/user", authMiddleware, userRoutes);
+app.use("/api/users", usersRoutes);
 app.use("/api/acquirers", acquirersRoutes); // Nova rota para gerenciar adquirentes
 
 // Configuração da porta do servidor
